@@ -16,7 +16,7 @@ def visited_links(request, *args, **kwargs):
                 continue
         return Response({"status": "ok"})
     except Exception as error:
-        return Response({"status": "Error"})
+        return Response({"status": f"{error}"})
 
 
 @api_view(["GET"])
@@ -28,12 +28,12 @@ def visited_domains(request, *args, **kwargs):
     try:
         from_date = float(from_date)
         to_date = float(to_date)
-    except ValueError as e:
+    except ValueError:
         response = {'status': 'Wrong parameter'}
         return Response(response, 400)
 
     queryset = []
-    for link in Link.objects.all():
+    for link in Link.objects.group_by('link').all():
         if from_date <= date <= to_date:
             queryset.append(link)
     return Response({"status": "ok", "domains": queryset})
