@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 
 @api_view(['POST'])
 
-def visited_links(self, request, *args, **kwargs):
+def visited_links(request, *args, **kwargs):
     try:
         for link in request.data.get('links'):
             try:
@@ -24,9 +24,24 @@ def visited_links(self, request, *args, **kwargs):
 
 @api_view(["GET"])
 def visited_domains(request, *args, **kwargs):
-    date = datetime.datetime.now().timestamp()
-    print(date)
-    return Response({"Биля": "Блия1"})
+    date = datetime.datetime.now()
+    from_date = request.GET.get('from', 0)
+    to_date = request.GET.get('to', date)
+    try:
+        from_date = float(from_date)
+        to_date = float(to_date)
+    except ValueError as e:
+        response = {'status': 'bad GET parameter'}
+        return Response(response, 400)
+
+    queryset = []
+    for link in Link.objects.all():
+        if from_date <= date <= to_date:
+            queryset.append(link)
+    return Response({"status": "ok", "domains": queryset})
+
+
+
 
 
 
