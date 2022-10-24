@@ -30,7 +30,7 @@ def visited_domains(request, *args, **kwargs):
         to_date = float(to_date)
     except ValueError:
         response = {'status': 'Wrong parameter'}
-        return Response(response, 400)
+        return Response({"status": "error"})
 
     queryset = []
     for link in Link.objects.group_by('link').all():
